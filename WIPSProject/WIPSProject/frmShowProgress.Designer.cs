@@ -1,6 +1,6 @@
 ﻿namespace WIPSProject
 {
-    partial class ShowProgress
+    partial class frmShowProgress
     {
         /// <summary>
         /// Required designer variable.

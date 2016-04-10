@@ -26,9 +26,15 @@ namespace WIPSProject
         private void showProgressToolStripMenuItem_Click(object sender, EventArgs e)
         {
             
-            ShowProgress frmshowprog = new ShowProgress();
+            frmShowProgress frmshowprog = new frmShowProgress();
             frmshowprog.ShowDialog();
 
+        }
+
+        private void serverToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FTServerCode.frmServer ofrmserver = new FTServerCode.frmServer();
+            ofrmserver.ShowDialog();
         }
     }
 }
