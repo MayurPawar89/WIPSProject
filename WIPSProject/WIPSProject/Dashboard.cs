@@ -22,5 +22,13 @@ namespace WIPSProject
             ConnectAnalyseScan frmcon = new ConnectAnalyseScan();
             frmcon.ShowDialog();
         }
+
+        private void showProgressToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            ShowProgress frmshowprog = new ShowProgress();
+            frmshowprog.ShowDialog();
+
+        }
     }
 }

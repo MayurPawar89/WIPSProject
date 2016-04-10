@@ -84,6 +84,7 @@
             this.showProgressToolStripMenuItem.Name = "showProgressToolStripMenuItem";
             this.showProgressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.showProgressToolStripMenuItem.Text = "Show Progress";
+            this.showProgressToolStripMenuItem.Click += new System.EventHandler(this.showProgressToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 

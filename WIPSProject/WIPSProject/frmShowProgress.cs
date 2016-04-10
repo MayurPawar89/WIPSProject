@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace WIPSProject
 {
-    public partial class Mainform1 : Form
+    public partial class ShowProgress : Form
     {
-        public Mainform1()
+        public ShowProgress()
         {
             InitializeComponent();
         }

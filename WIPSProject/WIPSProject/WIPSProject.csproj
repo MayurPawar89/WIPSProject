@@ -57,11 +57,11 @@
       <DependentUpon>Dashboard.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="ShowProgress.cs">
+    <Compile Include="frmShowProgress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ShowProgress.Designer.cs">
-      <DependentUpon>ShowProgress.cs</DependentUpon>
+    <Compile Include="frmShowProgress.Designer.cs">
+      <DependentUpon>frmShowProgress.cs</DependentUpon>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -83,8 +83,8 @@
     <EmbeddedResource Include="Dashboard.resx">
       <DependentUpon>Dashboard.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ShowProgress.resx">
-      <DependentUpon>ShowProgress.cs</DependentUpon>
+    <EmbeddedResource Include="frmShowProgress.resx">
+      <DependentUpon>frmShowProgress.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

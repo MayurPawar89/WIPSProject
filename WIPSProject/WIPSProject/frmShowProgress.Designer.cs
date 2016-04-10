@@ -1,6 +1,6 @@
 ﻿namespace WIPSProject
 {
-    partial class Mainform1
+    partial class ShowProgress
     {
         /// <summary>
         /// Required designer variable.
