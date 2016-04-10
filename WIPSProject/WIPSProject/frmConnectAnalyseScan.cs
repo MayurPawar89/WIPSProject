@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace WIPSProject
 {
-    public partial class ConnectAnalyseScan : Form
+    public partial class frmConnectAnalyseScan : Form
     {
-        public ConnectAnalyseScan()
+        public frmConnectAnalyseScan()
         {
             InitializeComponent();
         }

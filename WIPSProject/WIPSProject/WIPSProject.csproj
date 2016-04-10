@@ -44,17 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectAnalyseScan.cs">
+    <Compile Include="frmConnectAnalyseScan.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConnectAnalyseScan.Designer.cs">
-      <DependentUpon>ConnectAnalyseScan.cs</DependentUpon>
+    <Compile Include="frmConnectAnalyseScan.Designer.cs">
+      <DependentUpon>frmConnectAnalyseScan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dashboard.cs">
+    <Compile Include="frmDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dashboard.Designer.cs">
-      <DependentUpon>Dashboard.cs</DependentUpon>
+    <Compile Include="frmDashboard.Designer.cs">
+      <DependentUpon>frmDashboard.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="frmShowProgress.cs">
@@ -77,11 +77,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ConnectAnalyseScan.resx">
-      <DependentUpon>ConnectAnalyseScan.cs</DependentUpon>
+    <EmbeddedResource Include="frmConnectAnalyseScan.resx">
+      <DependentUpon>frmConnectAnalyseScan.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Dashboard.resx">
-      <DependentUpon>Dashboard.cs</DependentUpon>
+    <EmbeddedResource Include="frmDashboard.resx">
+      <DependentUpon>frmDashboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmShowProgress.resx">
       <DependentUpon>frmShowProgress.cs</DependentUpon>

@@ -10,16 +10,16 @@ using System.Windows.Forms;
 
 namespace WIPSProject
 {
-    public partial class Dashboard : Form
+    public partial class frmDashboard : Form
     {
-        public Dashboard()
+        public frmDashboard()
         {
             InitializeComponent();
         }
 
         private void mainformToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConnectAnalyseScan frmcon = new ConnectAnalyseScan();
+            frmConnectAnalyseScan frmcon = new frmConnectAnalyseScan();
             frmcon.ShowDialog();
         }
 

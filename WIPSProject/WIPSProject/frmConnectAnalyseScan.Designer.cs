@@ -1,6 +1,6 @@
 ﻿namespace WIPSProject
 {
-    partial class ConnectAnalyseScan
+    partial class frmConnectAnalyseScan
     {
         /// <summary>
         /// Required designer variable.

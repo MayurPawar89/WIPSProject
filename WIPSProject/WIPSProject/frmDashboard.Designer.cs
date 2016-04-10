@@ -1,6 +1,6 @@
 ﻿namespace WIPSProject
 {
-    partial class Dashboard
+    partial class frmDashboard
     {
         /// <summary>
         /// Required designer variable.
