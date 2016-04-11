@@ -10,7 +10,7 @@ using System.Net.Sockets;
 using System.IO;
 
 
-namespace FTServerCode
+namespace WIPSProject
 {
     public partial class frmServer : Form
     {

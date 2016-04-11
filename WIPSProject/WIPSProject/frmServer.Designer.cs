@@ -1,4 +1,4 @@
-namespace FTServerCode
+namespace WIPSProject
 {
     partial class frmServer
     {

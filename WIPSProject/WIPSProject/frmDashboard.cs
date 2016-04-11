@@ -33,7 +33,7 @@ namespace WIPSProject
 
         private void serverToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FTServerCode.frmServer ofrmserver = new FTServerCode.frmServer();
+            frmServer ofrmserver = new frmServer();
             ofrmserver.ShowDialog();
         }
     }
