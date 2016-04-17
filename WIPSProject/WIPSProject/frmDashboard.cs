@@ -16,6 +16,19 @@ namespace WIPSProject
         {
             InitializeComponent();
         }
+        Int16 nConnectionType = 0;
+        public Int16 ConnectionType
+        {
+            get
+            {
+                return  nConnectionType;
+            }
+            set
+            {
+                nConnectionType = value;
+            }
+        }
+
 
         private void mainformToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -25,7 +38,7 @@ namespace WIPSProject
 
         private void showProgressToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
             frmShowProgress frmshowprog = new frmShowProgress();
             frmshowprog.ShowDialog();
 
@@ -33,8 +46,13 @@ namespace WIPSProject
 
         private void serverToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmServer ofrmserver = new frmServer();
+            frmServerNew ofrmserver = new frmServerNew();
             ofrmserver.ShowDialog();
+        }
+
+        private void frmDashboard_Load(object sender, EventArgs e)
+        {
+            MessageBox.Show("Connected as: " + ConnectionType.ToString());
         }
     }
 }

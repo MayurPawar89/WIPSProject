@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainformToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showProgressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,7 +40,6 @@
             this.infectedFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.progressFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutUsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,9 +69,16 @@
             // mainformToolStripMenuItem
             // 
             this.mainformToolStripMenuItem.Name = "mainformToolStripMenuItem";
-            this.mainformToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mainformToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.mainformToolStripMenuItem.Text = "Mainform";
             this.mainformToolStripMenuItem.Click += new System.EventHandler(this.mainformToolStripMenuItem_Click);
+            // 
+            // serverToolStripMenuItem
+            // 
+            this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
+            this.serverToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.serverToolStripMenuItem.Text = "Server";
+            this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -84,7 +91,7 @@
             // showProgressToolStripMenuItem
             // 
             this.showProgressToolStripMenuItem.Name = "showProgressToolStripMenuItem";
-            this.showProgressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showProgressToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.showProgressToolStripMenuItem.Text = "Show Progress";
             this.showProgressToolStripMenuItem.Click += new System.EventHandler(this.showProgressToolStripMenuItem_Click);
             // 
@@ -114,13 +121,13 @@
             // infectedFilesToolStripMenuItem
             // 
             this.infectedFilesToolStripMenuItem.Name = "infectedFilesToolStripMenuItem";
-            this.infectedFilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.infectedFilesToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.infectedFilesToolStripMenuItem.Text = "Infected Files";
             // 
             // progressFilesToolStripMenuItem
             // 
             this.progressFilesToolStripMenuItem.Name = "progressFilesToolStripMenuItem";
-            this.progressFilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.progressFilesToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.progressFilesToolStripMenuItem.Text = "Progress Files";
             // 
             // aboutUsToolStripMenuItem
@@ -128,13 +135,6 @@
             this.aboutUsToolStripMenuItem.Name = "aboutUsToolStripMenuItem";
             this.aboutUsToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
             this.aboutUsToolStripMenuItem.Text = "About Us";
-            // 
-            // serverToolStripMenuItem
-            // 
-            this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
-            this.serverToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.serverToolStripMenuItem.Text = "Server";
-            this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem_Click);
             // 
             // frmDashboard
             // 
@@ -146,6 +146,7 @@
             this.Name = "frmDashboard";
             this.Text = "Dashboard Server";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.frmDashboard_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

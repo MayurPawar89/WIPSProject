@@ -45,6 +45,7 @@
             this.btnStopServer.TabIndex = 14;
             this.btnStopServer.Text = "Stop Server";
             this.btnStopServer.UseVisualStyleBackColor = true;
+            this.btnStopServer.Click += new System.EventHandler(this.btnStopServer_Click);
             // 
             // btnSendFile
             // 
@@ -54,6 +55,7 @@
             this.btnSendFile.TabIndex = 13;
             this.btnSendFile.Text = "Select File to Send";
             this.btnSendFile.UseVisualStyleBackColor = true;
+            this.btnSendFile.Click += new System.EventHandler(this.btnSendFile_Click);
             // 
             // curMsg
             // 
@@ -80,6 +82,11 @@
             this.btnStartServer.TabIndex = 10;
             this.btnStartServer.Text = "Start Server";
             this.btnStartServer.UseVisualStyleBackColor = true;
+            this.btnStartServer.Click += new System.EventHandler(this.btnStartServer_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // frmServerNew
             // 
