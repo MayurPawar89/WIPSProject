@@ -18,6 +18,7 @@ namespace WIPSProject
         }
         enum ConnectionType
         {
+            None,
             Server,
             Client
         }
@@ -29,20 +30,34 @@ namespace WIPSProject
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            frmDashboard frmDashboard = new frmDashboard();
-            frmDashboard.ConnectionType = ConnectAs;
-            frmDashboard.Show();
-            this.Hide();
+            if (ConnectAs!=0)
+            {
+                frmDashboard frmDashboard = new frmDashboard();
+                frmDashboard.ConnectionType = ConnectAs;
+                frmDashboard.Show();
+                this.Hide();
+            }
         }
 
         private void rdClient_CheckedChanged(object sender, EventArgs e)
         {
-            ConnectAs = Convert.ToInt16(ConnectionType.Client);
+            if (rdClient.Checked)
+            {
+                ConnectAs = Convert.ToInt16(ConnectionType.Client);
+            }
         }
 
         private void rdServer_CheckedChanged(object sender, EventArgs e)
         {
-            ConnectAs = Convert.ToInt16(ConnectionType.Server);
+            if (rdServer.Checked)
+            {
+                ConnectAs = Convert.ToInt16(ConnectionType.Server);
+            }
+        }
+
+        private void frmSplashScreen_Load(object sender, EventArgs e)
+        {
+            txtTitle.Text = "Windows Intrusion Prevension" + Environment.NewLine + " System (WIPS)";
         }
     }
 }
