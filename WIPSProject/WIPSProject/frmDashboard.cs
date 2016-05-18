@@ -74,6 +74,8 @@ namespace WIPSProject
                 pnlClient.Visible = true;
                 tmrServer.Stop();
                 tmrClient.Start();
+                btnCilentReceivingPath.Visible = false;
+                CheckLocationAvailable();
             }
 
         }
@@ -239,13 +241,14 @@ namespace WIPSProject
         private void btnConnectToServer_Click(object sender, EventArgs e)
         {
             lblClientStatus.Text = ""; lblClientStatus.Refresh();
-            if (string.IsNullOrEmpty(sClientReceivedPath))
-            {
-                MessageBox.Show("Please select file receiving path");
-                return;
-            }
+            //if (string.IsNullOrEmpty(sClientReceivedPath))
+            //{
+            //    MessageBox.Show("Please select file receiving path");
+            //    return;
+            //}
             try
             {
+                pnlClientDetails.Visible = true;
                 IPHostEntry ipEntry = Dns.GetHostByName(Dns.GetHostName());
                 IPAddress[] addr = ipEntry.AddressList;
 
@@ -255,7 +258,6 @@ namespace WIPSProject
                 Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                 sClientCurrentStatus = "Connection to server ..."; curMsg.Refresh();
                 clientSock.Connect(ipEnd);
-                pnlClientDetails.Visible = true;
                 curMsg.Text = "Connected to server waiting to receive file."; curMsg.Refresh();
 
                 byte[] clientData = new byte[1024 * 5000];
@@ -278,19 +280,29 @@ namespace WIPSProject
             }
             catch (Exception ex)
             {
-                if (ex.Message == "No connection could be made because the target machine actively refused it")
-                    sClientCurrentStatus = "File Sending fail. Because server not running.";
+                if (ex.Message.Contains("No connection could be made because the target machine actively refused it"))
+                    sClientCurrentStatus = "Unable to connect to server. \nPlease check server is runnung or not.";
                 else
-                    sClientCurrentStatus = "File Sending fail." + ex.Message;
+                    sClientCurrentStatus = "Unable to received file from server. \n" + ex.Message;
             }
         }
 
         private void btnCilentReceivingPath_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fd = new FolderBrowserDialog();
-            if (fd.ShowDialog() == DialogResult.OK)
+            //FolderBrowserDialog fd = new FolderBrowserDialog();
+            //if (fd.ShowDialog() == DialogResult.OK)
+            //{
+            //    sClientReceivedPath = fd.SelectedPath;
+            //}
+            
+        }
+
+        private void CheckLocationAvailable()
+        {
+            sClientReceivedPath = Path.Combine("C:\\WIPS Project\\Files From Server");
+            if (!Directory.Exists(sClientReceivedPath))
             {
-                sClientReceivedPath = fd.SelectedPath;
+                Directory.CreateDirectory(sClientReceivedPath);
             }
         }
     }
