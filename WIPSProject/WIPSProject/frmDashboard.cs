@@ -258,8 +258,12 @@ namespace WIPSProject
                 Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                 sClientCurrentStatus = "Connection to server ..."; curMsg.Refresh();
                 clientSock.Connect(ipEnd);
+                lblClinentMAchineIP.Text = ip.ToString();
+                lblClientMachineName.Text = ipEntry.HostName.ToString();
                 curMsg.Text = "Connected to server waiting to receive file."; curMsg.Refresh();
-
+                
+                AddFileWatcher();
+                
                 byte[] clientData = new byte[1024 * 5000];
                 string receivedPath = sClientReceivedPath;
 
@@ -285,6 +289,35 @@ namespace WIPSProject
                 else
                     sClientCurrentStatus = "Unable to received file from server. \n" + ex.Message;
             }
+        }
+
+        private void AddFileWatcher()
+        {
+            FileSystemWatcher fsw = new FileSystemWatcher();
+            fsw.Path = sClientReceivedPath;
+            fsw.Filter = "*.*";
+
+            fsw.IncludeSubdirectories = true;
+            fsw.EnableRaisingEvents = true;
+
+            fsw.Created += fsw_Created;
+        }
+
+        void fsw_Created(object sender, FileSystemEventArgs e)
+        {
+            //check file contains hot listed words.
+            string[] sFileContent=File.ReadAllLines(Path.Combine(sClientReceivedPath, e.Name));
+            foreach (string item in sFileContent)
+            {
+                if (item.Contains("SystemRoot"))
+                {
+                    MessageBox.Show("File " + e.Name.ToString() + " has been received from server.\nThis file may harm your computer. Please check file.");
+                    break;
+                }
+            }
+            //if hotlisted word found then show alert else show file received message.
+            //Insert value in database.
+            //MessageBox.Show("File " + e.Name.ToString() + " has been received from server.");
         }
 
         private void btnCilentReceivingPath_Click(object sender, EventArgs e)
