@@ -10,6 +10,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace WIPSProject
 {
@@ -76,10 +78,51 @@ namespace WIPSProject
                 tmrClient.Start();
                 btnCilentReceivingPath.Visible = false;
                 CheckLocationAvailable();
+
+                LoadHostlistWords();
             }
 
         }
 
+        private SqlConnection InitializeConnection()
+        {
+            SqlConnection conn = null;
+            string strCon = System.Configuration.ConfigurationManager.ConnectionStrings["WIPSCon"].ConnectionString;
+            conn = new SqlConnection(strCon);
+            return conn;
+        }
+
+        private void LoadHostlistWords()
+        {
+            try
+            {
+                con = InitializeConnection();
+                DataTable dt = new DataTable();
+                using (SqlDataAdapter sda = new SqlDataAdapter("SELECT wor.sWord AS HotlistWord FROM dbo.WordsHotlist AS wor WHERE wor.bIsHotlistWord = 1", con))
+                {
+                    sda.Fill(dt);
+                }
+                lstWordsHotlist = new List<string>();
+                foreach (DataRow dr in dt.Rows)
+                {
+                    lstWordsHotlist.Add(dr["HotlistWord"].ToString());
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error to get Hotlist of words" + ex.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con = null;
+                }
+            }
+        }
+        SqlConnection con = null;
+        List<string> lstWordsHotlist = null;
         IPEndPoint ipEnd;
         Socket sock;
         Socket clientSock;
@@ -261,9 +304,9 @@ namespace WIPSProject
                 lblClinentMAchineIP.Text = ip.ToString();
                 lblClientMachineName.Text = ipEntry.HostName.ToString();
                 curMsg.Text = "Connected to server waiting to receive file."; curMsg.Refresh();
-                
+
                 AddFileWatcher();
-                
+
                 byte[] clientData = new byte[1024 * 5000];
                 string receivedPath = sClientReceivedPath;
 
@@ -301,23 +344,82 @@ namespace WIPSProject
             fsw.EnableRaisingEvents = true;
 
             fsw.Created += fsw_Created;
+            fsw.Changed += fsw_Changed;
+        }
+
+        void fsw_Changed(object sender, FileSystemEventArgs e)
+        {
+            ScanFileAndAddTranInDB(e);
         }
 
         void fsw_Created(object sender, FileSystemEventArgs e)
         {
+            ScanFileAndAddTranInDB(e);
+        }
+
+        private void ScanFileAndAddTranInDB(FileSystemEventArgs e)
+        {
             //check file contains hot listed words.
-            string[] sFileContent=File.ReadAllLines(Path.Combine(sClientReceivedPath, e.Name));
+            bool bIsHotlistWordFound = false;
+            string sFileFullPath = Path.Combine(sClientReceivedPath, e.Name);
+            string[] sFileContent = File.ReadAllLines(sFileFullPath);
             foreach (string item in sFileContent)
             {
-                if (item.Contains("SystemRoot"))
+                string sLine = item.ToLower();
+                foreach (string word in lstWordsHotlist)
                 {
-                    MessageBox.Show("File " + e.Name.ToString() + " has been received from server.\nThis file may harm your computer. Please check file.");
-                    break;
+                    if (sLine.Contains(word.ToLower()))
+                    {
+                        bIsHotlistWordFound = true;
+                        goto BreakLoop;
+                    }
                 }
             }
+
+        BreakLoop:
             //if hotlisted word found then show alert else show file received message.
+            if (bIsHotlistWordFound)
+            {
+                MessageBox.Show("File " + e.Name.ToString() + " has been received from server.\nThis file may harm your computer. Please check file.");
+            }
+
+            //getFileInformation
+            FileInfo sFileInfo = new FileInfo(sFileFullPath);
+            string sfileName = sFileInfo.Name;
+            string sfileSize = sFileInfo.Length.ToString();
+            string sfileLoc = sFileInfo.FullName;
+
             //Insert value in database.
+            Int64 nFileID = InsertFileDetailsInDB(sfileName, sfileSize, sfileLoc);
+            bool bIsTrnInDB = InsertTransactionDetailsInDB();
             //MessageBox.Show("File " + e.Name.ToString() + " has been received from server.");
+        }
+
+        private bool InsertTransactionDetailsInDB()
+        {
+            return true;
+        }
+
+        private Int64 InsertFileDetailsInDB(string sfileName, string sfileSize, string sfileLoc)
+        {
+            Int64 nFileID = 0;
+            object obj = null;
+            using (con = InitializeConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(string.Format("INSERT INTO [FileInformation]([sFileName],[sFileSize],[sFileLocation],[bIsFileScan]) Output Inserted.nFileID VALUES('{0}','{1}','{2}','{3}')", sfileName, sfileSize, sfileLoc, "True"), con))
+                {
+                    con.Open();
+                    obj=cmd.ExecuteScalar();
+                    con.Close();
+                }
+            }
+
+            if (obj!=null)
+            {
+                nFileID = Convert.ToInt64(obj);
+            }
+
+            return nFileID;
         }
 
         private void btnCilentReceivingPath_Click(object sender, EventArgs e)
@@ -327,7 +429,7 @@ namespace WIPSProject
             //{
             //    sClientReceivedPath = fd.SelectedPath;
             //}
-            
+
         }
 
         private void CheckLocationAvailable()
