@@ -34,7 +34,7 @@ namespace WIPSProject
             }
         }
         public enum MessageType
-        { 
+        {
             None,
             Information,
             Warning,
@@ -42,6 +42,8 @@ namespace WIPSProject
             Question
         }
         public string sClientReceivedPath { get; set; }
+
+        public string sApplicationTempPath { get; set; }
 
         public string sClientCurrentStatus { get; set; }
 
@@ -74,6 +76,7 @@ namespace WIPSProject
                 pnlServer.Visible = true;
                 tmrServer.Start();
                 tmrClient.Stop();
+                CheckLocationAvailable(ConnectionType);
             }
             else if (ConnectionType == 2)
             {
@@ -83,10 +86,11 @@ namespace WIPSProject
                 tmrServer.Stop();
                 tmrClient.Start();
                 btnCilentReceivingPath.Visible = false;
-                CheckLocationAvailable();
+                CheckLocationAvailable(ConnectionType);
                 pnlClientDetails.Visible = true;
 
                 LoadHostlistWords();
+                AddFileWatcher();
             }
 
         }
@@ -118,7 +122,7 @@ namespace WIPSProject
             }
             catch (Exception ex)
             {
-                ShowMessageBox("Error to get Hotlist of words" + ex.ToString(),MessageType.Error);
+                ShowMessageBox("Error to get Hotlist of words" + ex.ToString(), MessageType.Error);
             }
             finally
             {
@@ -164,7 +168,7 @@ namespace WIPSProject
             }
             catch (Exception ex)
             {
-                ShowMessageBox("Error in Start server: " + ex.ToString(),MessageType.Error);
+                ShowMessageBox("Error in Start server: " + ex.ToString(), MessageType.Error);
             }
         }
 
@@ -185,7 +189,7 @@ namespace WIPSProject
             }
             catch (Exception ex)
             {
-                ShowMessageBox("Error in Stop server: " + ex.ToString(),MessageType.Error);
+                ShowMessageBox("Error in Stop server: " + ex.ToString(), MessageType.Error);
             }
         }
 
@@ -240,9 +244,16 @@ namespace WIPSProject
                     sServerCurrentStatus = "File size is more than 850kb, please try with small file.";
                     return;
                 }
+                string sfName = string.Empty;
+
+                string sfilename = Path.GetFileNameWithoutExtension(Path.Combine(sApplicationTempPath, fileName));
+                string sfileext = Path.GetExtension(Path.Combine(sApplicationTempPath, fileName));
+                sfName = sfilename + System.DateTime.Now.ToString("yyyymmddhhmmss") + sfileext;
+
+                File.Copy(Path.Combine(filePath, fileName), Path.Combine(sApplicationTempPath, sfName));
 
                 sServerCurrentStatus = "Buffering ...";
-                byte[] fileData = File.ReadAllBytes(filePath + fileName);
+                byte[] fileData = File.ReadAllBytes(Path.Combine(sApplicationTempPath, sfName));
                 byte[] clientData = new byte[4 + fileNameByte.Length + fileData.Length];
                 byte[] fileNameLen = BitConverter.GetBytes(fileNameByte.Length);
 
@@ -290,10 +301,10 @@ namespace WIPSProject
         private void btnConnectToServer_Click(object sender, EventArgs e)
         {
             lblClientStatus.Text = ""; lblClientStatus.Refresh();
-            
+
             try
             {
-                
+
                 pnlClientDetails.Refresh();
                 IPHostEntry ipEntry = Dns.GetHostByName(Dns.GetHostName());
                 IPAddress[] addr = ipEntry.AddressList;
@@ -301,13 +312,13 @@ namespace WIPSProject
                 IPAddress ip = addr[0];
                 IPEndPoint ipEnd = new IPEndPoint(ip, 5656);
                 Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-                sClientCurrentStatus = "Connection to server ..."; curMsg.Refresh();
+                sClientCurrentStatus = "Connection to server ..."; 
                 clientSock.Connect(ipEnd);
                 lblClinentMAchineIP.Text = ip.ToString();
                 lblClientMachineName.Text = ipEntry.HostName.ToString();
-                curMsg.Text = "Connected to server waiting to receive file."; curMsg.Refresh();
+                sClientCurrentStatus = "Connected to server waiting to receive file.";
+                pnlClientDetails.Refresh();
 
-                AddFileWatcher();
 
                 byte[] btServerData = new byte[1024 * 5000];
                 string receivedPath = sClientReceivedPath;
@@ -317,7 +328,12 @@ namespace WIPSProject
 
                 int fileNameLen = BitConverter.ToInt32(btServerData, 0);
                 string fileName = Encoding.ASCII.GetString(btServerData, 4, fileNameLen);
-
+                if (File.Exists(Path.Combine(receivedPath, fileName)))
+                {
+                    string sfilename = Path.GetFileNameWithoutExtension(Path.Combine(receivedPath, fileName));
+                    string sfileext = Path.GetExtension(Path.Combine(receivedPath, fileName));
+                    fileName = sfilename + System.DateTime.Now.ToString("yyyymmddhhmmss") + sfileext;
+                }
                 BinaryWriter bWrite = new BinaryWriter(File.Open(receivedPath + "/" + fileName, FileMode.Append)); ;
                 bWrite.Write(btServerData, 4 + fileNameLen, receivedBytesLen - 4 - fileNameLen);
 
@@ -345,28 +361,64 @@ namespace WIPSProject
             fsw.IncludeSubdirectories = true;
             fsw.EnableRaisingEvents = true;
 
+            //bIsFWSCreatedCalled = false;
             fsw.Created += fsw_Created;
-            fsw.Changed += fsw_Changed;
+            //fsw.Changed += fsw_Changed;
         }
 
         void fsw_Changed(object sender, FileSystemEventArgs e)
         {
-            ScanFileAndAddTranInDB(e);
+            if (!bIsFWSCreatedCalled)
+            {
+                ScanFileAndAddTranInDB(e);
+            }
         }
-
+        Boolean bIsFWSCreatedCalled = false;
         void fsw_Created(object sender, FileSystemEventArgs e)
         {
             ScanFileAndAddTranInDB(e);
+            //bIsFWSCreatedCalled = true;
         }
 
         private void ScanFileAndAddTranInDB(FileSystemEventArgs e)
         {
             try
             {
+                //LoadingImage frm = new LoadingImage();
+                //frm.ShowDialog();
+                
+                System.Threading.Thread.Sleep(1000);
                 //check file contains hot listed words.
                 bool bIsHotlistWordFound = false;
                 string sFileFullPath = Path.Combine(sClientReceivedPath, e.Name);
                 string[] sFileContent = File.ReadAllLines(sFileFullPath);
+                List<string> fileLines = new List<string>();
+
+                //using (var reader = new StreamReader(sFileFullPath))
+                //{
+                //    string line;
+                //    while ((line = reader.ReadLine()) != null)
+                //    {
+                //        fileLines.Add(line);
+                //    }
+                //    reader.Close();
+                //    reader.Dispose();
+                //}
+                //if (File.Exists(sFileFullPath))
+                //{
+
+                //    StreamReader SR = new StreamReader(sFileFullPath);
+                //    string line;
+
+                //    while ((line = SR.ReadLine()) != null)
+                //    {
+                //        fileLines.Add(line);
+                //    }
+                //    SR.Close();
+                //    SR.Dispose();
+                //}
+
+                string sHotWord = string.Empty;
                 foreach (string item in sFileContent)
                 {
                     string sLine = item.ToLower();
@@ -375,27 +427,47 @@ namespace WIPSProject
                         if (sLine.Contains(word.ToLower()))
                         {
                             bIsHotlistWordFound = true;
+                            sHotWord = word;
                             goto BreakLoop;
                         }
                     }
                 }
 
             BreakLoop:
+
                 //if hotlisted word found then show alert else show file received message.
                 if (bIsHotlistWordFound)
                 {
                     ShowMessageBox("File " + e.Name.ToString() + " has been received from server.\nThis file may harm your computer. Please check file.", MessageType.Warning);
                 }
+                else
+                {
+                    ShowMessageBox("File " + e.Name.ToString() + " has been received from server.\nThis file is safe.", MessageType.Warning);
+                }
+
+
 
                 //getFileInformation
                 FileInfo sFileInfo = new FileInfo(sFileFullPath);
                 string sfileName = sFileInfo.Name;
                 string sfileSize = sFileInfo.Length.ToString();
                 string sfileLoc = sFileInfo.FullName;
+                string sTrnStatus = string.Empty;
+                string sTrnDetails = string.Empty;
+                if (bIsHotlistWordFound)
+                {
+                    sTrnStatus = "Error";
+                    sTrnDetails = "File contains the word : " + sHotWord;
+                }
+                else
+                {
+                    sTrnStatus = "Success";
+                    sTrnDetails = "File is safe";
+                }
 
                 //Insert value in database.
                 Int64 nFileID = InsertFileDetailsInDB(sfileName, sfileSize, sfileLoc);
-                bool bIsTrnInDB = InsertTransactionDetailsInDB(nFileID);
+                bool bIsTrnInDB = InsertTransactionDetailsInDB(nFileID, sTrnStatus, sTrnDetails);
             }
             catch (Exception ex)
             {
@@ -403,7 +475,7 @@ namespace WIPSProject
             }
         }
 
-        private void ShowMessageBox(string sMessageText, MessageType messageType=0)
+        private void ShowMessageBox(string sMessageText, MessageType messageType = 0)
         {
             switch (messageType)
             {
@@ -425,9 +497,38 @@ namespace WIPSProject
             }
         }
 
-        private bool InsertTransactionDetailsInDB(Int64 FileID)
+        private bool InsertTransactionDetailsInDB(Int64 FileID, string TrnStatus, string TrnDetails)
         {
-            return true;
+            bool result = false;
+            object obj = null;
+            try
+            {
+                using (con = InitializeConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(string.Format("INSERT INTO [FileTransactions]([nFileID],[sSourceID],[sDestinationID],[sTrnStatus],[sTrnDetails]) Output Inserted.nTrnID VALUES('{0}','{1}','{2}','{3}','{4}')", FileID, lblClinentMAchineIP.Text, lblClinentMAchineIP.Text, TrnStatus, TrnDetails), con))
+                    {
+                        con.Open();
+                        obj = cmd.ExecuteScalar();
+                        con.Close();
+                    }
+                }
+
+                if (obj != null)
+                {
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessageBox("Error in Insert file details in Database: " + ex.ToString(), MessageType.Error);
+            }
+            finally
+            {
+                if (obj != null)
+                    obj = null;
+            }
+
+            return result;
         }
 
         private Int64 InsertFileDetailsInDB(string sfileName, string sfileSize, string sfileLoc)
@@ -457,7 +558,7 @@ namespace WIPSProject
             }
             finally
             {
-                if (obj!=null)
+                if (obj != null)
                     obj = null;
             }
 
@@ -474,20 +575,57 @@ namespace WIPSProject
 
         }
 
-        private void CheckLocationAvailable()
+        private void CheckLocationAvailable(int ConType)
         {
             try
             {
-                sClientReceivedPath = Path.Combine("C:\\WIPS Project\\Files From Server");
-                if (!Directory.Exists(sClientReceivedPath))
+                if (ConType == 1)
                 {
-                    Directory.CreateDirectory(sClientReceivedPath);
+                    string sApplicationPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Temp");
+                    if (!Directory.Exists(sApplicationPath))
+                    {
+                        Directory.CreateDirectory(sApplicationPath);
+                    }
+                    sApplicationTempPath = sApplicationPath;
                 }
+                else
+                {
+                    sClientReceivedPath = Path.Combine("C:\\WIPS Project\\Files From Server");
+                    if (!Directory.Exists(sClientReceivedPath))
+                    {
+                        Directory.CreateDirectory(sClientReceivedPath);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
                 ShowMessageBox("Error creating default folder location: " + ex.ToString(), MessageType.Error);
             }
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            Application.Exit();
+        }
+
+        private void btnClientExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            Application.Exit();
+        }
+
+        private void btnReport_Click(object sender, EventArgs e)
+        {
+            frmReport frm = new frmReport();
+            frm.ShowInTaskbar = false;
+            frm.ShowDialog();
+        }
+
+        private void frmDashboard_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

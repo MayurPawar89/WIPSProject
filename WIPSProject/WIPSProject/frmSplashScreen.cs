@@ -35,6 +35,11 @@ namespace WIPSProject
                 frmDashboard frmDashboard = new frmDashboard();
                 frmDashboard.ConnectionType = ConnectAs;
                 frmDashboard.Show();
+                if (ConnectAs==(int)ConnectionType.Server)
+                    frmDashboard.Text = "Dashboard Server";
+                else
+                    frmDashboard.Text = "Dashboard Client";
+                
                 this.Hide();
             }
         }
